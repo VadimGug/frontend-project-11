@@ -2,6 +2,8 @@
 
 [![hexlet-check](https://github.com/VadimGug/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/VadimGug/frontend-project-11/actions)
 
+[Ссылка на сайт](https://frontend-project-11-navy-seven.vercel.app/)
+
 После проекта вы сможете уверенно работать с DOM, Vite, Tailwind CSS, AJAX, валидациями и деплоить проект
 
 Учебный проект Хекслета: https://ru.hexlet.io/programs/frontend
