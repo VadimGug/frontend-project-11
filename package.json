@@ -14,5 +14,9 @@
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.1"
+  },
+  "dependencies": {
+    "valtio": "^2.3.2",
+    "yup": "^1.7.1"
   }
 }
