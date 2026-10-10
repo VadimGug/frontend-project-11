@@ -16,6 +16,7 @@ const resources = {
         button: 'Добавить',
       },
       feedback: {
+        invalidUrl: 'Нет ссылки',
         invalidRss: 'Ссылка не содержит валидный RSS',
         required: 'Не должно быть пустым',
         exists: 'RSS уже существует',
