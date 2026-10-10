@@ -125,6 +125,39 @@ i18next.init({
         state.form.status = 'filling';
         state.form.error = '';
         form.reset();
+
+        const checkUpdates = () => {
+          const promises = state.urls.map((url, index) => {
+            const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(currentUrl)}`;
+            
+            return axios.get(proxyUrl)
+            .then((response) => {
+              const xmlString = response.data.contents;
+              const { posts } = parseRSS(xmlString);
+              const currentPostLinks = state.posts.map((p) => p.link);
+              const newPostsFromNetwork = posts.filter((post) => !currentPostLinks.includes(post.link));
+
+              if (newPostsFromNetwork.length > 0) {
+                const postsWithId = newPostsFromNetwork.map((post) => ({
+                  id: crypto.randomUUID(),
+                  feedId: state.feeds[index].id,
+                  title: post.title,
+                  link: post.link,
+                }));
+                state.posts = [ ...postsWithId, ...state.posts,];
+              }
+            })
+            .catch((err) => {
+              console.error('Ошибка обновления фида:', err);
+            });
+          });
+          Promise.all(promises)
+          .finally(() => {
+            setTimeout(checkUpdates, 5000);
+          });
+        };
+        setTimeout(checkUpdates, 5000);
+
       })
       .catch((err) => {
         state.form.status = 'failed';
