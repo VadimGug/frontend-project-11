@@ -3,6 +3,8 @@ import './style.css';
 import * as yup from 'yup';
 import watch from './view.js';
 import i18next from 'i18next';
+import parseRSS from './parser.js';
+import axios from 'axios';
 
 const resources = {
   ru: {
@@ -14,10 +16,11 @@ const resources = {
         button: 'Добавить',
       },
       feedback: {
-        invalidUrl: 'Ссылка должна быть валидным URL',
+        invalidRss: 'Ссылка не содержит валидный RSS',
         required: 'Не должно быть пустым',
         exists: 'RSS уже существует',
         success: 'RSS успешно добавлен',
+        network: 'Ошибка сети',
       },
     },
   },
@@ -39,6 +42,8 @@ const state = proxy({
     error: '',
   },
   urls: [], 
+  feeds: [],
+  posts: [],
 });
 
 const schema = yup.string().url().required().notOneOf(state.urls); 
@@ -69,8 +74,14 @@ i18next.init({
             </button>
           </form>
           <p class="feedback mt-2 text-sm text-red-500"></p>
-        </div>
+        </div>       
       </section>
+      <div class="container-fluid container-xxl my-5 font-sans">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-slate-900">
+          <div class="md:col-span-2 posts-container"></div>
+          <div class="feeds-container"></div>
+        </div>
+      </div>
     `;
 
     watch(state);
@@ -85,15 +96,43 @@ i18next.init({
 
     schema.validate(currentUrl)
       .then(() => {
-        state.urls.push(currentUrl);
+        const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(currentUrl)}`;
+        state.form.status = 'loading';
+        
+        return axios.get(proxyUrl);
+      })
+      .then((response) => {
+        const xmlString = response.data.contents;
+        const { feed, posts } = parseRSS(xmlString);
+        const feedId = crypto.randomUUID();
+        
+        const newFeed = {
+          id: feedId,
+          title: feed.title,
+          description: feed.description,
+        };
+
+        const newPosts = posts.map((post) => ({
+          id: crypto.randomUUID(),
+          feedId: feedId,
+          title: post.title,
+          link: post.link,
+        }));
+
+        state.feeds = [...state.feeds, newFeed];
+        state.posts = [...state.posts, ...newPosts];
+        state.urls = [...state.urls, currentUrl];
         state.form.status = 'filling';
         state.form.error = '';
-        
-        e.target.reset();
+        form.reset();
       })
       .catch((err) => {
         state.form.status = 'failed';
-        state.form.error = err.message; 
+        if (err.isAxiosError) {
+          state.form.error = 'feedback.network';
+        } else { 
+          state.form.error = err.message;
+        }
       });
   });
 });
