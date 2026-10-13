@@ -14,14 +14,19 @@ const resources = {
       form: {
         placeholder: 'Ссылка RSS',
         button: 'Добавить',
+        preview: 'Просмотр',
       },
       feedback: {
-        invalidUrl: 'Нет ссылки',
+        invalidUrl: 'Ссылка не содержит валидный RSS',
         invalidRss: 'Ссылка не содержит валидный RSS',
         required: 'Не должно быть пустым',
         exists: 'RSS уже существует',
         success: 'RSS успешно добавлен',
         network: 'Ошибка сети',
+      },
+      modal: {
+        close: 'Закрыть',
+        readMore: 'Читать полностью',
       },
     },
   },
@@ -45,6 +50,10 @@ const state = proxy({
   urls: [], 
   feeds: [],
   posts: [],
+  uiState: {
+    viewedPostIds: [],
+    previewPostId: null,
+  },
 });
 
 const schema = yup.string().url().required().notOneOf(state.urls); 
@@ -83,10 +92,26 @@ i18next.init({
           <div class="feeds-container"></div>
         </div>
       </div>
+      <dialog class="rounded-lg border border-slate-200 shadow-xl p-6 max-w-md w-full backdrop:bg-slate-900/50">
+        <div class="flex flex-col gap-4 text-slate-900">
+          <h2 class="modal-title text-xl font-bold"></h2>
+          <p class="modal-body text-slate-600 text-sm" data-test="modal-body"></p>
+          <div class="flex justify-end gap-2 mt-2">
+            <a class="full-link bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700" target="_blank" rel="noopener noreferrer">
+              ${i18next.t('modal.readMore')}
+            </a>
+            <form method="dialog">
+              <button class="bg-slate-100 text-slate-700 px-4 py-2 rounded text-sm font-medium hover:bg-slate-200">
+               ${i18next.t('modal.close')}
+              </button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     `;
 
     watch(state);
-
+    
   const form = document.querySelector('form');
 
   form.addEventListener('submit', (e) => {
@@ -168,5 +193,17 @@ i18next.init({
           state.form.error = err.message;
         }
       });
+      const appContainer = document.querySelector('#app');
+      appContainer.addEventListener('click', (e) => {
+        const id = e.target.dataset.id;
+        if (id) {
+          if (!state.uiState.viewedPostIds.includes(id)) {
+            state.uiState.viewedPostIds = [...state.uiState.viewedPostIds, id];
+          }
+          if (e.target.tagName === 'BUTTON') {
+            state.uiState.previewPostId = id;
+          }
+        }
+      });
+    });
   });
-});

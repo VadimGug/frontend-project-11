@@ -32,23 +32,44 @@ export default (state) => {
           <ul class="list-none p-0 m-0">${feedsHtml}</ul>
         </div>
       `;
-    }
+    };
 
     if (postsContainer && state.posts.length > 0) {
-      const postsHtml = state.posts.map((post) => `
-        <li class="py-3 border-b border-slate-100 last:border-none">
-          <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="font-medium text-blue-600 hover:text-blue-800">
+      const postsHtml = state.posts.map((post) => {
+        const isViewed = state.uiState.viewedPostIds.includes(post.id);
+        const fontClass = isViewed ? 'font-normal text-slate-600' : 'font-bold text-slate-900';
+        return `
+        <li class="py-3 border-b border-slate-100 last:border-none flex justify-between items-center gap-4">
+          <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="${fontClass} hover:text-blue-600 transition-colors" data-id="${post.id}">
             ${post.title}
           </a>
+          <button type="button" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-100 transition-colors shrink-0" data-id="${post.id}">
+            ${i18next.t('form.preview')}
+          </button>
         </li>
-      `).join('');
-
-      postsContainer.innerHTML = `
-        <div class="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
-          <h2 class="text-xl font-bold mb-4 text-slate-900">${i18next.t('posts')}</h2>
-          <ul class="list-none p-0 m-0">${postsHtml}</ul>
-        </div>
       `;
-    }
+    }).join('');
+
+    postsContainer.innerHTML = `
+      <div class="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+        <h2 class="text-xl font-bold mb-4 text-slate-900">${i18next.t('posts')}</h2>
+        <ul class="list-none p-0 m-0">${postsHtml}</ul>
+      </div>
+    `;
+    };
+    if (state.uiState.previewPostId) {
+      const dialog = document.querySelector('dialog');
+      const currentPost = state.posts.find((p) => p.id === state.uiState.previewPostId);
+      
+      if (currentPost && dialog) {
+        dialog.querySelector('.modal-title').textContent = currentPost.title;
+        dialog.querySelector('.modal-body').textContent = currentPost.title;
+        dialog.querySelector('.full-link').setAttribute('href', currentPost.link);
+        dialog.showModal();
+        dialog.onclose = () => {
+          state.uiState.previewPostId = null;
+        };
+      };
+    };
   });
 };
