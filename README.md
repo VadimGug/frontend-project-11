@@ -1,6 +1,5 @@
 # RSS Агрегатор
 
-[![Actions Status](https://github.com)](https://github.com)
 [![hexlet-check](https://github.com/VadimGug/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/VadimGug/frontend-project-11/actions)
 
 Удобный веб-сервис для чтения RSS-лент в реальном времени. Приложение позволяет добавлять ссылки на RSS-потоки, автоматически валидирует их, фоново обновляет контент и предоставляет удобный интерфейс для предпросмотра статей в модальном окне.
