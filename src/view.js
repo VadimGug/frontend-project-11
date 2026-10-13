@@ -10,15 +10,22 @@ export default (state) => {
     const feedsContainer = document.querySelector('.feeds-container');
 
     if (state.form.status === 'failed') {
+      feedback.classList.remove('text-green-500');
+      feedback.classList.add('text-red-500');
       input.classList.add('ring-2', 'ring-red-500', 'border-transparent');
       feedback.textContent = i18next.t(state.form.error);
     }
 
     if (state.form.status === 'filling' && state.form.error === '') {
       input.classList.remove('ring-2', 'ring-red-500', 'border-transparent');
+      if (state.feeds.length > 0) {
+        feedback.classList.remove('text-red-500');
+        feedback.classList.add('text-green-500');
+        feedback.textContent = i18next.t('feedback.success');
+      } else {
       feedback.textContent = '';
     }
-
+  }
     if (feedsContainer && state.feeds.length > 0) {
       const feedsHtml = state.feeds.map((feed) => `
       <li class="py-3 border-b border-slate-100 last:border-none">
@@ -63,7 +70,7 @@ export default (state) => {
       
       if (currentPost && dialog) {
         dialog.querySelector('.modal-title').textContent = currentPost.title;
-        dialog.querySelector('.modal-body').textContent = currentPost.title;
+        dialog.querySelector('.modal-body').textContent = currentPost.description;
         dialog.querySelector('.full-link').setAttribute('href', currentPost.link);
         dialog.showModal();
         dialog.onclose = () => {

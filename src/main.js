@@ -17,11 +17,11 @@ const resources = {
         preview: 'Просмотр',
       },
       feedback: {
-        invalidUrl: 'Ссылка не содержит валидный RSS',
+        invalidUrl: 'Ссылка должна быть валидным URL',
         invalidRss: 'Ссылка не содержит валидный RSS',
         required: 'Не должно быть пустым',
         exists: 'RSS уже существует',
-        success: 'RSS успешно добавлен',
+        success: 'RSS успешно загружен',
         network: 'Ошибка сети',
       },
       modal: {
@@ -143,6 +143,7 @@ i18next.init({
           feedId: feedId,
           title: post.title,
           link: post.link,
+          description: post.description,
         }));
 
         state.feeds = [...state.feeds, newFeed];
@@ -169,6 +170,7 @@ i18next.init({
                   feedId: state.feeds[index].id,
                   title: post.title,
                   link: post.link,
+                  description: post.description,
                 }));
                 state.posts = [ ...postsWithId, ...state.posts,];
               }

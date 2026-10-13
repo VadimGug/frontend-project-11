@@ -12,7 +12,8 @@ const parseRSS = (xmlString) => {
   const posts = Array.from(items).map((item) => {
     const title = item.querySelector('title').textContent;
     const link = item.querySelector('link').textContent;
-    return { title, link };
+    const description = item.querySelector('description').textContent;
+    return { title, link, description };
   });
 
   return {
