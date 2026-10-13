@@ -8,7 +8,16 @@ export default (state) => {
   subscribe(state, () => {
     const postsContainer = document.querySelector('.posts-container');
     const feedsContainer = document.querySelector('.feeds-container');
+    const submitButton = document.querySelector('form button[type="submit"]');
 
+    if (state.form.status === 'loading') {
+      submitButton.disabled = true;
+      input.readOnly = true;
+    } else {
+      submitButton.disabled = false;
+      input.readOnly = false;
+    }
+    
     if (state.form.status === 'failed') {
       feedback.classList.remove('text-green-500');
       feedback.classList.add('text-red-500');
