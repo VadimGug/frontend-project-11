@@ -111,33 +111,61 @@ i18next.init({
     `;
 
     watch(state);
-    
-  const form = document.querySelector('form');
+    const form = document.querySelector('form');
+    const checkUpdates = () => {
+      if (state.urls.length === 0) {
+        setTimeout(checkUpdates, 5000);
+        return;
+      }
+      const promises = state.urls.map((url, index) => {
+        const proxyUrl = `https://hexlet.app{encodeURIComponent(url)}`;
+        return axios.get(proxyUrl)
+        .then((response) => {
+          const xmlString = response.data.contents;
+          const { posts } = parseRSS(xmlString);
+          const currentPostLinks = state.posts.map((p) => p.link);
+          const newPostsFromNetwork = posts.filter((post) => !currentPostLinks.includes(post.link));
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const currentUrl = formData.get('url');
-
-    schema.validate(currentUrl)
+          if (newPostsFromNetwork.length > 0) {
+            const postsWithId = newPostsFromNetwork.map((post) => ({
+              id: crypto.randomUUID(),
+              feedId: state.feeds[index].id,
+              title: post.title,
+              link: post.link,
+              description: post.description,
+            }));
+            state.posts = [...postsWithId, ...state.posts];
+          }
+        })
+        .catch((err) => {
+          console.error('Ошибка обновления фида:', err);
+        });
+      });
+      Promise.all(promises)
+      .finally(() => {
+        setTimeout(checkUpdates, 5000);
+      });
+    };
+    setTimeout(checkUpdates, 5000);
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const currentUrl = formData.get('url');
+      schema.validate(currentUrl)
       .then(() => {
-        const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(currentUrl)}`;
+        const proxyUrl = `https://hexlet.app{encodeURIComponent(currentUrl)}`;
         state.form.status = 'loading';
-        
         return axios.get(proxyUrl);
       })
       .then((response) => {
         const xmlString = response.data.contents;
         const { feed, posts } = parseRSS(xmlString);
         const feedId = crypto.randomUUID();
-        
         const newFeed = {
           id: feedId,
           title: feed.title,
           description: feed.description,
         };
-
         const newPosts = posts.map((post) => ({
           id: crypto.randomUUID(),
           feedId: feedId,
@@ -145,47 +173,12 @@ i18next.init({
           link: post.link,
           description: post.description,
         }));
-
         state.feeds = [...state.feeds, newFeed];
         state.posts = [...state.posts, ...newPosts];
         state.urls = [...state.urls, currentUrl];
         state.form.status = 'filling';
         state.form.error = '';
         form.reset();
-
-        const checkUpdates = () => {
-          const promises = state.urls.map((url, index) => {
-            const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(currentUrl)}`;
-            
-            return axios.get(proxyUrl)
-            .then((response) => {
-              const xmlString = response.data.contents;
-              const { posts } = parseRSS(xmlString);
-              const currentPostLinks = state.posts.map((p) => p.link);
-              const newPostsFromNetwork = posts.filter((post) => !currentPostLinks.includes(post.link));
-
-              if (newPostsFromNetwork.length > 0) {
-                const postsWithId = newPostsFromNetwork.map((post) => ({
-                  id: crypto.randomUUID(),
-                  feedId: state.feeds[index].id,
-                  title: post.title,
-                  link: post.link,
-                  description: post.description,
-                }));
-                state.posts = [ ...postsWithId, ...state.posts,];
-              }
-            })
-            .catch((err) => {
-              console.error('Ошибка обновления фида:', err);
-            });
-          });
-          Promise.all(promises)
-          .finally(() => {
-            setTimeout(checkUpdates, 5000);
-          });
-        };
-        setTimeout(checkUpdates, 5000);
-
       })
       .catch((err) => {
         state.form.status = 'failed';
@@ -195,17 +188,17 @@ i18next.init({
           state.form.error = err.message;
         }
       });
-      const appContainer = document.querySelector('#app');
-      appContainer.addEventListener('click', (e) => {
-        const id = e.target.dataset.id;
-        if (id) {
-          if (!state.uiState.viewedPostIds.includes(id)) {
-            state.uiState.viewedPostIds = [...state.uiState.viewedPostIds, id];
-          }
-          if (e.target.tagName === 'BUTTON') {
-            state.uiState.previewPostId = id;
-          }
+    });
+    const appContainer = document.querySelector('#app');
+    appContainer.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      if (id) {
+        if (!state.uiState.viewedPostIds.includes(id)) {
+          state.uiState.viewedPostIds = [...state.uiState.viewedPostIds, id];
         }
-      });
+        if (e.target.tagName === 'BUTTON') {
+          state.uiState.previewPostId = id;
+        };
+      };
     });
   });
