@@ -118,7 +118,7 @@ i18next.init({
         return;
       }
       const promises = state.urls.map((url, index) => {
-        const proxyUrl = `https://hexlet.app${encodeURIComponent(url)}`;
+        const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
         return axios.get(proxyUrl)
         .then((response) => {
           const xmlString = response.data.contents;
