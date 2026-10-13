@@ -118,7 +118,7 @@ i18next.init({
         return;
       }
       const promises = state.urls.map((url, index) => {
-        const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url={encodeURIComponent(currentUrl)}`;
+        const proxyUrl = `https://hexlet.app${encodeURIComponent(url)}`;
         return axios.get(proxyUrl)
         .then((response) => {
           const xmlString = response.data.contents;
@@ -153,7 +153,7 @@ i18next.init({
       const currentUrl = formData.get('url');
       schema.validate(currentUrl)
       .then(() => {
-        const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url={encodeURIComponent(currentUrl)}`;
+        const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(currentUrl)}`;
         state.form.status = 'loading';
         return axios.get(proxyUrl);
       })
