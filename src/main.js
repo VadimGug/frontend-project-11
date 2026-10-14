@@ -141,7 +141,7 @@ i18next.init({
           console.error('Ошибка обновления фида:', err);
         });
       });
-      Promise.all(promises)
+      return Promise.all(promises)
       .finally(() => {
         setTimeout(checkUpdates, 5000);
       });
