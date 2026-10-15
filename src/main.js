@@ -121,7 +121,7 @@ i18next.init({
         const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
         return axios.get(proxyUrl)
         .then((response) => {
-          const xmlString = response.data.contents;
+          const xmlString = response.data.contents || response.data;
           const { posts } = parseRSS(xmlString);
           const currentPostLinks = state.posts.map((p) => p.link);
           const newPostsFromNetwork = posts.filter((post) => !currentPostLinks.includes(post.link));
@@ -158,7 +158,7 @@ i18next.init({
         return axios.get(proxyUrl);
       })
       .then((response) => {
-        const xmlString = response.data.contents;
+        const xmlString = response.data.contents || response.data;
         const { feed, posts } = parseRSS(xmlString);
         const feedId = crypto.randomUUID();
         const newFeed = {
