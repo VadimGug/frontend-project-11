@@ -121,8 +121,14 @@ i18next.init({
         const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
         return axios.get(proxyUrl)
         .then((response) => {
-          const xmlString = response.data.contents || response.data;
-          const { posts } = parseRSS(xmlString);
+          let xmlString;
+          if (response.data && typeof response.data === 'object') {
+            xmlString = response.data.contents || response.data.data || response.data;
+          } else {
+            xmlString = response.data;
+          }
+          const finalXml = typeof xmlString === 'object' ? JSON.stringify(xmlString) : xmlString;
+          const { posts } = parseRSS(finalXml);
           const currentPostLinks = state.posts.map((p) => p.link);
           const newPostsFromNetwork = posts.filter((post) => !currentPostLinks.includes(post.link));
 
@@ -158,8 +164,14 @@ i18next.init({
         return axios.get(proxyUrl);
       })
       .then((response) => {
-        const xmlString = response.data.contents || response.data;
-        const { feed, posts } = parseRSS(xmlString);
+        let xmlString;
+        if (response.data && typeof response.data === 'object') {
+          xmlString = response.data.contents || response.data.data || response.data;
+        } else {
+          xmlString = response.data;
+        }
+        const finalXml = typeof xmlString === 'object' ? JSON.stringify(xmlString) : xmlString;
+        const { feed, posts } = parseRSS(finalXml);
         const feedId = crypto.randomUUID();
         const newFeed = {
           id: feedId,
