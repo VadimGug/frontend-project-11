@@ -57,25 +57,28 @@ export default (state) => {
       const postsHtml = state.posts.map((post) => {
         const isViewed = state.uiState.viewedPostIds.includes(post.id);
         const fontClass = isViewed ? 'font-normal text-slate-600' : 'font-bold text-slate-900';
+        const seenStatus = isViewed ? 'true' : 'false';
+
         return `
         <li class="py-3 border-b border-slate-100 last:border-none flex justify-between items-center gap-4">
-          <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="${fontClass} hover:text-blue-600 transition-colors" data-id="${post.id}">
+          <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="${fontClass} hover:text-blue-600 transition-colors" data-id="${post.id}" data-seen="${seenStatus}">
             ${post.title}
           </a>
-          <button type="button" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-100 transition-colors shrink-0" data-id="${post.id}">
+          <button type="button" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-100 transition-colors shrink-0" data-id="${post.id}" data-seen="${seenStatus}">
             ${i18next.t('form.preview')}
           </button>
         </li>
       `;
-    }).join('');
+      }).join('');
 
-    postsContainer.innerHTML = `
-      <div class="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
-        <h2 class="text-xl font-bold mb-4 text-slate-900">${i18next.t('posts')}</h2>
-        <ul class="list-none p-0 m-0">${postsHtml}</ul>
-      </div>
-    `;
-    };
+      postsContainer.innerHTML = `
+        <div class="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+          <h2 class="text-xl font-bold mb-4 text-slate-900">${i18next.t('posts')}</h2>
+          <ul class="list-none p-0 m-0">${postsHtml}</ul>
+        </div>
+      `;
+    }
+
     if (state.uiState.previewPostId) {
       const dialog = document.querySelector('dialog');
       const currentPost = state.posts.find((p) => p.id === state.uiState.previewPostId);
