@@ -13,13 +13,14 @@ export default (state) => {
     if (state.form.status === 'loading') {
       input.disabled = true;
       submitButton.disabled = true;
+      feedback.textContent = '';
     }
 
     if (state.form.status === 'filling' || state.form.status === 'failed') {
       input.disabled = false;
       submitButton.disabled = false;
     }
-    
+
     if (state.form.status === 'failed') {
       feedback.classList.remove('text-green-500');
       feedback.classList.add('text-red-500');
@@ -34,9 +35,9 @@ export default (state) => {
         feedback.classList.add('text-green-500');
         feedback.textContent = i18next.t('feedback.success');
       } else {
-      feedback.textContent = '';
+        feedback.textContent = '';
+      }
     }
-  }
     if (feedsContainer && state.feeds.length > 0) {
       const feedsHtml = state.feeds.map((feed) => `
       <li class="py-3 border-b border-slate-100 last:border-none">
@@ -85,7 +86,6 @@ export default (state) => {
         dialog.querySelector('.full-link').setAttribute('href', currentPost.link);
         dialog.showModal();
         dialog.onclose = () => {
-          state.uiState.previewPostId = null;
         };
       };
     };

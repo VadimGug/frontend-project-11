@@ -194,6 +194,7 @@ i18next.init({
         }
       });
     });
+
     const appContainer = document.querySelector('#app');
     appContainer.addEventListener('click', (e) => {
       const id = e.target.dataset.id;
@@ -203,7 +204,13 @@ i18next.init({
         }
         if (e.target.tagName === 'BUTTON') {
           state.uiState.previewPostId = id;
-        };
-      };
+        }
+      }
     });
+    const dialogElement = document.querySelector('dialog');
+    if (dialogElement) {
+      dialogElement.addEventListener('close', () => {
+        state.uiState.previewPostId = null;
+      });
+    }
   });
