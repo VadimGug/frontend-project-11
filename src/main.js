@@ -179,6 +179,11 @@ i18next.init({
         state.form.status = 'filling';
         state.form.error = '';
         form.reset();
+        
+        const inputElement = form.querySelector('input[name="url"]');
+        if (inputElement) {
+          inputElement.focus();
+        }
       })
       .catch((err) => {
         state.form.status = 'failed';

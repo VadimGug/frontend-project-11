@@ -11,11 +11,13 @@ export default (state) => {
     const submitButton = document.querySelector('form button[type="submit"]');
 
     if (state.form.status === 'loading') {
+      input.disabled = true;
       submitButton.disabled = true;
-      input.readOnly = true;
-    } else {
+    }
+
+    if (state.form.status === 'filling' || state.form.status === 'failed') {
+      input.disabled = false;
       submitButton.disabled = false;
-      input.readOnly = false;
     }
     
     if (state.form.status === 'failed') {
