@@ -170,14 +170,17 @@ i18next.init({
         } else {
           xmlString = response.data;
         }
+
         const finalXml = typeof xmlString === 'object' ? JSON.stringify(xmlString) : xmlString;
         const { feed, posts } = parseRSS(finalXml);
         const feedId = crypto.randomUUID();
+        
         const newFeed = {
           id: feedId,
           title: feed.title,
           description: feed.description,
         };
+
         const newPosts = posts.map((post) => ({
           id: crypto.randomUUID(),
           feedId: feedId,
@@ -185,11 +188,14 @@ i18next.init({
           link: post.link,
           description: post.description,
         }));
+
+        state.form.error = '';
+        state.form.status = 'filling';
+        
         state.feeds = [...state.feeds, newFeed];
         state.posts = [...state.posts, ...newPosts];
         state.urls = [...state.urls, currentUrl];
-        state.form.status = 'filling';
-        state.form.error = '';
+        
         form.reset();
         
         const inputElement = form.querySelector('input[name="url"]');
@@ -202,7 +208,7 @@ i18next.init({
         if (err.isAxiosError) {
           state.form.error = 'feedback.network';
         } else { 
-          state.form.error = err.message;
+          state.form.error = 'feedback.invalidRss';
         }
       });
     });
