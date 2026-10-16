@@ -1,11 +1,17 @@
 install:
-	npm install
+	npm ci
+
+dev:
+	npm run dev
+
+lint:
+	npx eslint .
+
+lint-fix:
+	npx eslint --fix
 
 build:
-	npm run build
+	NODE_ENV=production npm run build
 
-run:
-	npx webpack serve
-
-lint_fix:
-	npx eslint src/** --fix
+test:
+	echo no tests

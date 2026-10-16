@@ -1,8 +1,4 @@
-import renderMain from './mainView';
-import renderPosts from './postsView';
-import renderModal from './modalView';
-import renderChannels from './channelsView';
+import './styles/style.css'
+import app from './app.js'
 
-export {
-  renderMain, renderPosts, renderModal, renderChannels,
-};
+app()
