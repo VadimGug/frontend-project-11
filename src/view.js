@@ -14,20 +14,11 @@ export default (state) => {
       input.disabled = true;
       submitButton.disabled = true;
       feedback.textContent = '';
-    } else {
-      input.disabled = false;
-      submitButton.disabled = false;
     }
 
-    if (state.form.status === 'filling') {
-      input.classList.remove('ring-2', 'ring-red-500', 'border-transparent');
-      if (state.feeds.length > 0) {
-        feedback.classList.remove('text-red-500');
-        feedback.classList.add('text-green-500');
-        feedback.textContent = i18next.t('feedback.success');
-      } else {
-        feedback.textContent = '';
-      }
+    if (state.form.status === 'filling' || state.form.status === 'failed') {
+      input.disabled = false;
+      submitButton.disabled = false;
     }
 
     if (state.form.status === 'failed') {
