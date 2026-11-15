@@ -25,15 +25,11 @@ export default (state) => {
       feedback.textContent = i18next.t(state.form.error);
     }
 
-    if (state.form.status === 'filling' && state.form.error === '') {
-      input.classList.remove('ring-2', 'ring-red-500', 'border-transparent');
-      if (state.feeds.length > 0) {
-        feedback.classList.remove('text-red-500');
-        feedback.classList.add('text-green-500');
-        feedback.textContent = i18next.t('feedback.success');
-      } else {
-      feedback.textContent = '';
-    }
+    if (state.form.status === 'finished') {
+    input.classList.remove('ring-2', 'ring-red-500', 'border-transparent');
+    feedback.classList.remove('text-red-500');
+    feedback.classList.add('text-green-500');
+    feedback.textContent = i18next.t('feedback.success');
   }
     if (feedsContainer && state.feeds.length > 0) {
       const feedsHtml = state.feeds.map((feed) => `
@@ -56,15 +52,17 @@ export default (state) => {
         const fontClass = isViewed ? 'font-normal text-slate-600' : 'font-bold text-slate-900';
         return `
         <li class="py-3 border-b border-slate-100 last:border-none flex justify-between items-center gap-4">
-          <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="${fontClass} hover:text-blue-600 transition-colors" data-id="${post.id}">
-            ${post.title}
+        <h3>
+          <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="${fontClass} hover:text-blue-600 transition-colors" data-id="${post.id}" data-seen="${isViewed}">
+           ${post.title}
           </a>
-          <button type="button" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-100 transition-colors shrink-0" data-id="${post.id}">
-            ${i18next.t('form.preview')}
-          </button>
+        </h3>
+        <button type="button" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-100 transition-colors shrink-0" data-id="${post.id}" data-seen="${isViewed}">
+          ${i18next.t('form.preview')}
+        </button>
         </li>
-      `;
-    }).join('');
+        `;
+      }).join('');
 
     postsContainer.innerHTML = `
       <div class="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">

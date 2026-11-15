@@ -18,7 +18,7 @@ const resources = {
       },
       feedback: {
         invalidUrl: 'Ссылка должна быть валидным URL',
-        invalidRss: 'Ссылка не содержит валидный RSS',
+        invalidRss: 'Ресурс не содержит валидный RSS',
         required: 'Не должно быть пустым',
         exists: 'RSS уже существует',
         success: 'RSS успешно загружен',
@@ -55,8 +55,6 @@ const state = proxy({
     previewPostId: null,
   },
 });
-
-const schema = yup.string().url().required().notOneOf(state.urls); 
 
 i18next.init({
   lng: 'ru',
@@ -157,6 +155,7 @@ i18next.init({
       e.preventDefault();
       const formData = new FormData(e.target);
       const currentUrl = formData.get('url');
+      const schema = yup.string().url().required().notOneOf(state.urls);
       schema.validate(currentUrl)
       .then(() => {
         const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(currentUrl)}`;
@@ -189,12 +188,12 @@ i18next.init({
           description: post.description,
         }));
 
-        state.form.error = '';
-        state.form.status = 'filling';
-        
         state.feeds = [...state.feeds, newFeed];
         state.posts = [...state.posts, ...newPosts];
         state.urls = [...state.urls, currentUrl];
+
+        state.form.error = '';
+        state.form.status = 'finished';
         
         form.reset();
         
@@ -205,9 +204,11 @@ i18next.init({
       })
       .catch((err) => {
         state.form.status = 'failed';
-        if (err.isAxiosError) {
+        if (err.name === 'ValidationError') {
+          state.form.error = err.message;
+        } else if (err.isAxiosError) {
           state.form.error = 'feedback.network';
-        } else { 
+        } else {
           state.form.error = 'feedback.invalidRss';
         }
       });
