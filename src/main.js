@@ -108,6 +108,8 @@ i18next.init({
       </dialog>
     `;
 
+    const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    
     watch(state);
     const form = document.querySelector('form');
     const checkUpdates = () => {
@@ -137,7 +139,7 @@ i18next.init({
 
           if (newPostsFromNetwork.length > 0) {
             const postsWithId = newPostsFromNetwork.map((post) => ({
-              id: crypto.randomUUID(),
+              id: generateId(),
               feedId: state.feeds[index].id,
               title: post.title,
               link: post.link,
@@ -182,7 +184,7 @@ i18next.init({
 
         const finalXml = typeof xmlString === 'object' ? JSON.stringify(xmlString) : xmlString;
         const { feed, posts } = parseRSS(finalXml);
-        const feedId = crypto.randomUUID();
+        const feedId = generateId();
         
         const newFeed = {
           id: feedId,
@@ -191,7 +193,7 @@ i18next.init({
         };
 
         const newPosts = posts.map((post) => ({
-          id: crypto.randomUUID(),
+          id: generateId(),
           feedId: feedId,
           title: post.title,
           link: post.link,
