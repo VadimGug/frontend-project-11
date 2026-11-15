@@ -120,11 +120,16 @@ i18next.init({
         return axios.get(proxyUrl)
         .then((response) => {
           let xmlString;
-          if (response.data && typeof response.data === 'object') {
-            xmlString = response.data.contents || response.data.data || response.data;
-          } else {
+        if (typeof response.data === 'string') {
+          try {
+            const parsed = JSON.parse(response.data);
+            xmlString = parsed.contents || response.data;
+          } catch {
             xmlString = response.data;
           }
+        } else if (response.data && typeof response.data === 'object') {
+          xmlString = response.data.contents || response.data.data || JSON.stringify(response.data);
+        }
           const finalXml = typeof xmlString === 'object' ? JSON.stringify(xmlString) : xmlString;
           const { posts } = parseRSS(finalXml);
           const currentPostLinks = state.posts.map((p) => p.link);
@@ -164,10 +169,15 @@ i18next.init({
       })
       .then((response) => {
         let xmlString;
-        if (response.data && typeof response.data === 'object') {
-          xmlString = response.data.contents || response.data.data || response.data;
-        } else {
-          xmlString = response.data;
+        if (typeof response.data === 'string') {
+          try {
+            const parsed = JSON.parse(response.data);
+            xmlString = parsed.contents || response.data;
+          } catch {
+            xmlString = response.data;
+          }
+        } else if (response.data && typeof response.data === 'object') {
+          xmlString = response.data.contents || response.data.data || JSON.stringify(response.data);
         }
 
         const finalXml = typeof xmlString === 'object' ? JSON.stringify(xmlString) : xmlString;
