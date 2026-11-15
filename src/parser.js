@@ -4,15 +4,22 @@ const parseRSS = (xmlString) => {
 
   const errorNode = doc.querySelector('parsererror');
   if (errorNode) {
-    throw new Error('feedback.invalidRss'); 
+    throw new Error('feedback.invalidRss');
   }
-  const feedTitle = doc.querySelector('channel > title').textContent;
-  const feedDescription = doc.querySelector('channel > description').textContent;
+
+  const channel = doc.querySelector('channel');
+  if (!channel) {
+    throw new Error('feedback.invalidRss');
+  }
+
+  const feedTitle = channel.querySelector('title')?.textContent ?? '';
+  const feedDescription = channel.querySelector('description')?.textContent ?? '';
   const items = doc.querySelectorAll('item');
+
   const posts = Array.from(items).map((item) => {
-    const title = item.querySelector('title').textContent;
-    const link = item.querySelector('link').textContent;
-    const description = item.querySelector('description').textContent;
+    const title = item.querySelector('title')?.textContent ?? '';
+    const link = item.querySelector('link')?.textContent ?? '';
+    const description = item.querySelector('description')?.textContent ?? '';
     return { title, link, description };
   });
 
